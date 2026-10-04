@@ -1,0 +1,2 @@
+Celtic Services Group — sample export (demo only).
+Safe files live in this folder; path traversal demo reads outside via ../

@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Workshop Notes · Break the AI App</title>
+  <link rel="stylesheet" href="/static/style.css">
+  <script src="/static/workshop_notes.js" defer></script>
+</head>
+<body>
+<header class="topbar collaboration-header">
+  <div class="collaboration-partner collaboration-partner-left">
+    <img class="partner-logo partner-logo-ucd" src="/static/ucd-logo.svg" alt="UCD Centre for Cybersecurity and Cybercrime Investigation">
+  </div>
+
+  <div class="collaboration-title">
+    <p class="eyebrow">Participant workspace</p>
+    <h1>Workshop Notes</h1>
+  </div>
+
+  <div class="collaboration-partner collaboration-partner-right">
+    <span class="mode mode-{{ mode }}">{{ mode }} mode</span>
+  </div>
+</header>
+<main class="page notes-page">
+  <section class="session-bar">
+    <div>Notes for <strong>{{ user.username }}</strong></div>
+    <a class="button-link" href="{% if dm_rpg_enabled %}/challenge{% else %}/{% endif %}">Return to workshop</a>
+  </section>
+
+  <article class="card">
+    <p>Record the flag, root cause, business impact and remediation for each challenge. Notes are autosaved in this browser. Use <strong>Save Markdown</strong> to choose a file location when supported, or download the file through the browser.</p>
+    <div class="notes-toolbar">
+      <button id="save-markdown" class="primary" type="button">Save Markdown</button>
+      <button id="clear-notes" type="button">Clear notes</button>
+      <span id="notes-status" class="notes-status" aria-live="polite"></span>
+    </div>
+  </article>
+
+  <div id="notes-grid" class="notes-grid">
+  {% for number, title in challenges %}
+    <article class="card notes-challenge" data-number="{{ number }}" data-title="{{ title }}">
+      <div>
+        <p class="eyebrow">Challenge {{ number }}</p>
+        <h2>{{ title }}</h2>
+      </div>
+      <label>FLAG
+        <textarea data-field="flag" placeholder="FLAG{...}"></textarea>
+      </label>
+      <label>Root cause
+        <textarea data-field="root-cause" placeholder="What design or implementation weakness caused this?"></textarea>
+      </label>
+      <label>Business impact
+        <textarea data-field="business-impact" placeholder="What could this mean for the organisation?"></textarea>
+      </label>
+      <label>Remediation
+        <textarea data-field="remediation" placeholder="What server-side, process or governance controls are needed?"></textarea>
+      </label>
+    </article>
+  {% endfor %}
+  </div>
+</main>
+</body>
+</html>

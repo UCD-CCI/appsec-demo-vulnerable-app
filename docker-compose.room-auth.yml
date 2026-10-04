@@ -1,0 +1,28 @@
+# Optional room gate: HTTP Basic Auth in front of the workshop app.
+#
+# Warmup / testers (auth ON):
+#   ./scripts/make-room-htpasswd.sh conference secret   # once
+#   docker compose -f docker-compose.yml -f docker-compose.room-auth.yml up -d
+#
+# Main conference (auth OFF):
+#   docker compose up -d
+#
+# Requires Docker Compose v2.24+ (!reset for ports). Check: docker compose version
+
+services:
+  break-ai-app:
+    # Stop publishing the app on the host — LAN clients must go through room-gate.
+    ports: !reset []
+    expose:
+      - "8000"
+
+  room-gate:
+    image: nginx:alpine
+    depends_on:
+      - break-ai-app
+    ports:
+      - "${HOST_BIND:-0.0.0.0}:${HOST_PORT:-8167}:80"
+    volumes:
+      - ./deploy/room-auth/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./deploy/room-auth/htpasswd:/etc/nginx/htpasswd:ro
+    restart: unless-stopped

@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Challenge · Break the AI App</title>
+  <link rel="stylesheet" href="/static/style.css">
+  <script src="/static/app.js" defer></script>
+</head>
+<body>
+<header class="topbar collaboration-header">
+  <div class="collaboration-partner collaboration-partner-left">
+    <img class="partner-logo partner-logo-ucd" src="/static/ucd-logo.svg" alt="UCD Centre for Cybersecurity and Cybercrime Investigation">
+  </div>
+
+  <div class="collaboration-title">
+    <p class="eyebrow">NCSC Cyber Week workshop</p>
+    <h1>Break the AI App</h1>
+  </div>
+
+  <div class="collaboration-partner collaboration-partner-right">
+    <span class="mode mode-{{ mode }}">{{ mode }} mode</span>
+  </div>
+</header>
+
+<main class="page" data-dm-rpg-enabled="true">
+  {% if testing_mode %}
+  <p class="facilitator-bar muted">Testing mode · <a href="/testing">Jump to another level</a></p>
+  {% endif %}
+  {% if facilitator %}
+  <p class="facilitator-bar muted">Facilitator <strong>{{ facilitator.username }}</strong> · <a href="/logout">Sign out</a></p>
+  {% endif %}
+
+  <div class="layout">
+    <section class="main-column">
+      <article class="card">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">AI operations assistant</p>
+            <h2>AIDA chat</h2>
+          </div>
+          <span class="status-dot">Online</span>
+        </div>
+        <div id="chat" class="chat" aria-live="polite"></div>
+        <form id="chat-form" class="chat-form">
+          <label class="sr-only" for="message">Message AIDA</label>
+          <input id="message" placeholder="Ask AIDA about its capabilities…" autocomplete="off" required>
+          <button class="primary" type="submit">Send</button>
+        </form>
+      </article>
+
+      <article class="card" id="session-coach-panel">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">Activity</p>
+            <h2 id="session-level-line">LEVEL 1 · Attempt <span id="game-level-attempts">0</span></h2>
+            <p class="muted session-total-line">Total attempts: <span id="game-attempts">0</span></p>
+          </div>
+        </div>
+        <p class="muted session-hint" id="game-hint" hidden></p>
+      </article>
+    </section>
+
+    <aside class="side-column">
+      <article class="card level-panel" id="level-panel">
+        <p class="eyebrow">Challenge path</p>
+        <div class="level-heading">
+          <h2 id="game-level-label">LEVEL #01 / 06</h2>
+          <a class="button-link notes-link" href="/workshop_notes" target="_blank" rel="noopener">Open notes</a>
+        </div>
+        <div class="level-progress" id="game-progress-bar" aria-hidden="true"></div>
+        <p class="level-objective" id="game-objective">Loading objective…</p>
+        <div class="level-instructions" id="game-instructions" hidden>
+          <p class="eyebrow">Your task</p>
+          <ul id="game-instructions-list"></ul>
+        </div>
+        <p class="level-pass-criteria" id="game-pass-criteria" hidden></p>
+        <p class="muted" id="game-level-title" hidden>Hidden instructions</p>
+        <p class="muted level-scoring" id="game-scoring"></p>
+        <div id="game-levels" class="level-list"></div>
+        <p class="muted" id="game-judge-reason"></p>
+        <button id="game-reset" type="button">Reset progress</button>
+      </article>
+
+      <article class="card" id="together-card">
+        <p class="eyebrow">Together</p>
+        <h2>Capture what you learn</h2>
+        <p>Use <a href="/workshop_notes" target="_blank" rel="noopener">Notes</a> for each cleared level: flag, root cause, business impact, and remediation. Discuss as a group — the goal is understanding, not points.</p>
+        <ul class="scoring-flags" id="scoring-flags" hidden></ul>
+      </article>
+    </aside>
+  </div>
+</main>
+</body>
+</html>

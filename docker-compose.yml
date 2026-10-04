@@ -1,0 +1,49 @@
+services:
+  break-ai-app:
+    build:
+      context: .
+      network: host
+    ports:
+      # Laptop-safe default: 127.0.0.1. For a server, set HOST_BIND=0.0.0.0 in .env
+      - "${HOST_BIND:-127.0.0.1}:${HOST_PORT:-8167}:8000"
+    environment:
+      APP_MODE: ${APP_MODE:-vulnerable}
+      SESSION_SECRET: ${SESSION_SECRET:-workshop-only-change-me}
+      LLM_URL: ${LLM_URL:-http://host.docker.internal:8001/v1/chat/completions}
+      LLM_MODEL: ${LLM_MODEL:-unsloth/Qwen3.8-27B-NVFP4}
+      LLM_API_KEY: ${LLM_API_KEY:-CSG-ORBIT-EXFIL-9}
+      LLM_TIMEOUT: ${LLM_TIMEOUT:-120}
+      DM_RPG_MODE: ${DM_RPG_MODE:-pilot}
+      MAX_INFLIGHT_CHATS: ${MAX_INFLIGHT_CHATS:-0}
+    extra_hosts:
+      # Lets the container reach an LLM published on the Docker host (worf).
+      - "host.docker.internal:host-gateway"
+    volumes:
+      - ./data:/app/data
+    restart: unless-stopped
+
+  # Local CPU fallback — keep defined, leave stopped while using an external LLM.
+  # Start with: docker compose --profile local-llm up -d
+  llm:
+    image: ghcr.io/ggml-org/llama.cpp:server
+    profiles:
+      - local-llm
+    command:
+      - "-m"
+      - "/models/SmolLM2-360M-Instruct-Q4_K_M.gguf"
+      - "--host"
+      - "0.0.0.0"
+      - "--port"
+      - "8080"
+      - "--ctx-size"
+      - "2048"
+      - "--n-predict"
+      - "160"
+      - "--threads"
+      - "2"
+      - "--parallel"
+      - "1"
+      - "--no-webui"
+    volumes:
+      - ./models:/models:ro
+    restart: unless-stopped

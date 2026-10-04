@@ -1,0 +1,156 @@
+Workshop notepad — pick 6 challenges + OWASP 2026 labels
+Full PDF: docs/OWASP-GenAI-LLM-Top-10-2026-v1.0.pdf
+One-pager: docs/OWASP-LLM-Top-10-2026-one-pager.md
+Project: https://owasp.org/www-project-top-10-for-large-language-model-applications/
+
+================================================================================
+TERMINOLOGY CROSSWALK (same idea, different names we have used)
+================================================================================
+
+Our term                          | OWASP 2026 (primary)     | Also called / overlaps
+----------------------------------|--------------------------|----------------------------------
+Hidden instructions               | LLM08 Hidden Context     | system prompt leak, internal
+System prompt disclosure          |   Exposure               |   disclosure, confidential marker
+                                  | LLM02 Sensitive Info     |
+                                  |   Disclosure             |
+Goal hijack / off-topic answers   | LLM01 Prompt Injection   | jailbreak, scope abuse, mission
+                                  |                          |   drift (behaviour change)
+Indirect prompt injection         | LLM01 Prompt Injection   | untrusted retrieved content,
+  (tickets, RAG)                  |                          |   instruction in data
+Tool discovery / tool schema      | LLM03 Excessive Agency   | attack surface enumeration,
+                                  |                          |   insecure plugin design (2023)
+Customer / employee data access   | LLM02 Sensitive Info     | BOLA when via API; data exfil
+                                  |   Disclosure             |   via model or tools
+Unsafe tool call / supplier       | LLM03 Excessive Agency   | function-level auth, agent
+  approve / password reset        |                          |   autonomy, improper grants
+Reviewer bypass                   | LLM01 Prompt Injection   | guardrail evasion, encoding,
+                                  | LLM08 Hidden Context     |   smuggling past in-world reviewer
+Remediated / hardened replay      | (not one OWASP item)     | controls across LLM01–03 mainly
+
+2023 → 2026 renames that trip us up:
+  - "System prompt leakage"     → LLM08 Hidden Context Exposure
+  - "Insecure plugin design"  → folded into LLM03 Excessive Agency
+  - "Excessive agency"        → still LLM03 but ranked higher (#3)
+  - "Improper output handling"→ still LLM10 but ranked lower (#10)
+
+When we say "this is OWASP number X" we mean: LLM0X:2026 <Official Name>
+
+================================================================================
+OWASP GENAI LLM TOP 10 — 2026 (our reading)
+================================================================================
+
+LLM01  Prompt Injection
+       Input (user, RAG, tools, images, memory) steers the model off intent.
+       Includes direct jailbreaks AND indirect injection via retrieved docs.
+       Our Goal Hijack and Tickets challenges are both flavours of this.
+
+LLM02  Sensitive Information Disclosure
+       Confidential/regulated data leaves via model output, tools, or logs.
+       Our "customer data access" and leaked PII in chat fit here.
+
+LLM03  Excessive Agency
+       Model can call tools / act on systems with too much permission or too
+       little human approval. Our tool discovery, supplier approve, password
+       reset, and "unsafe action" levels fit here.
+
+LLM04  Supply Chain
+       Bad models, adapters, dependencies. Not in our six yet.
+
+LLM05  Data and Model Poisoning
+       Poisoned training/fine-tune/RAG corpus. Not in our six yet.
+
+LLM06  Unbounded Consumption
+       Cost/DoS via heavy inference. Not in our six yet.
+
+LLM07  Misinformation
+       Wrong but confident answers drive bad decisions. Debrief only unless
+       we add a "trust the bot" level.
+
+LLM08  Hidden Context Exposure
+       Extract hidden system instructions, policies, tool lists, secrets.
+       Our "hidden instructions" / internal disclosure — say THIS number
+       when teaching prompt secrecy (not only LLM02).
+
+LLM09  Vector and Embedding Weaknesses
+       RAG retrieval manipulation. Ticket injection is partly LLM01; pure
+       vector poisoning would be LLM09 — we don't have a clean level yet.
+
+LLM10  Improper Output Handling
+       App executes or trusts model output without sanitising. Classic API
+       bugs overlap; not a pure chat level in our app today.
+
+Not covered in LLM Top 10 but in classic workshop:
+  - BOLA / broken object-level authorization (Employee 1042) — API security;
+    story is LLM03 agent calls API without proper checks.
+
+================================================================================
+OUR THREE LISTS (before we merge into one six)
+================================================================================
+
+A) Architecture sketch (LLM-native, rubbish-collection doc)
+#  Suggested level              Idea
+1  Goal Hijack                  Persuade bot to do unrelated task
+2  Internal Information         Extract hidden instructions/markers
+   Disclosure
+3  Customer Data Access         Another customer's information
+4  Unsafe Action                Unauthorised simulated tool
+5  Reviewer Bypass              Evade weak second-model reviewer
+6  Remediated Version           Same challenge, stronger controls
+
+B) Classic (keyword/API, six live in code)
+#  Title              Lesson                              Flag
+1  Hidden instructions  secrets in system prompt          FLAG{SYSTEM_PROMPT_IS_NOT_A_SECRET}
+2  Tool discovery       expose tool schema / APIs         FLAG{TOOLS_ARE_ATTACK_SURFACE}
+3  Tickets 101/313      indirect injection via ticket     FLAG{RETRIEVED_CONTENT_BY_UNTRUSTED}
+4  Employee Access      BOLA — another employee record    FLAG{BOLA_EXPOSED_ANOTHER_USER}
+5  Password reset       function auth on admin reset      FLAG{FUNCTION_LEVEL_AUTH_MATTERS}
+6  Supplier 77          approve high-risk without auth    FLAG{AGENTS_NEED_LIMITED_AUTHORITY}
+
+C) Pilot live now (5 levels; L6 planned)
+1  Hidden instructions  (natural LLM persuasion)     LLM08 / LLM02
+2  Goal Hijack          (off-mission recipe/poem)    LLM01
+3  Support ticket PII   (retrieved data leak)        LLM02
+4  Poisoned case load   (paste + workflow injection) LLM01
+5  Employee Access      (BOLA via employee lookup)   LLM02 + BOLA
+6  Encoded exfiltration (planned)                    LLM01 / LLM10
+
+================================================================================
+DRAFT: OWASP PRIMARY LABEL PER OUR IDEA (for aggregation)
+================================================================================
+
+Use ONE headline OWASP number in facilitator script; secondary in debrief.
+
+Architecture / classic idea          | Say "OWASP …"     | Workshop level?
+-------------------------------------|-------------------|------------------
+Hidden instructions / internal       | LLM08 (primary)   | yes — pilot L1
+  disclosure                           LLM02 (secondary) |
+Goal hijack                          | LLM01             | yes — pilot L2
+Tool discovery                       | LLM03             | maybe merge into L4?
+Tickets / indirect injection         | LLM01             | strong candidate L3
+Customer / employee data access      | LLM02             | strong candidate L3/4
+  (+ BOLA via API)                     | (+ API BOLA note) |
+Unsafe action / supplier / reset     | LLM03             | strong candidate L4/5
+Reviewer bypass                      | LLM01 + LLM08     | stretch goal L5
+Remediated replay                    | ( recap LLM01–03 )| capstone L6
+
+Gaps — no natural level yet:
+  LLM04 Supply Chain, LLM05 Poisoning, LLM06 Unbounded Consumption,
+  LLM07 Misinformation, LLM09 Vector weaknesses, LLM10 Output handling
+
+================================================================================
+AGGREGATION WORKSPACE — pick final 6 (edit below)
+================================================================================
+
+#  Working title          OWASP headline    Merged from A/B/C?    Notes
+1  ___________________    LLM__            ___________________   _______
+2  ___________________    LLM__            ___________________   _______
+3  ___________________    LLM__            ___________________   _______
+4  ___________________    LLM__            ___________________   _______
+5  ___________________    LLM__            ___________________   _______
+6  ___________________    LLM__            ___________________   _______
+
+Open questions:
+- Order: disclosure before hijack (pilot) or hijack first (architecture doc)?
+- Tool discovery: own level or folded into excessive agency?
+- Tickets: keep as classic L3 or replace with LLM-native indirect injection?
+- Do we need a level that is clearly LLM09 (vector/RAG) or LLM10 (output)?

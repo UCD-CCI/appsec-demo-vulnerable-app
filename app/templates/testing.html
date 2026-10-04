@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Testing · Break the AI App</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+<header class="topbar collaboration-header">
+  <div class="collaboration-partner collaboration-partner-left">
+    <img class="partner-logo partner-logo-ucd" src="/static/ucd-logo.svg" alt="UCD Centre for Cybersecurity and Cybercrime Investigation">
+  </div>
+
+  <div class="collaboration-title">
+    <p class="eyebrow">Facilitator testing</p>
+    <h1>Break the AI App</h1>
+  </div>
+
+  <div class="collaboration-partner collaboration-partner-right">
+    <span class="mode mode-{{ mode }}">{{ mode }} mode</span>
+  </div>
+</header>
+
+<main class="page intro-page">
+  <article class="card instructions mission-brief">
+    <p class="eyebrow">Testing mode</p>
+    <h2>Jump to a pilot level</h2>
+    <p>Sets your session progress and opens the challenge page. For facilitator rehearsal only — not shown to participants on the intro flow.</p>
+    <ul class="testing-levels">
+      {% for level in levels %}
+      <li>
+        <a class="button-link{% if loop.first %} primary{% endif %}" href="/testing/{{ loop.index }}">
+          Level {{ loop.index }} — {{ level.title }}
+        </a>
+      </li>
+      {% endfor %}
+    </ul>
+    <div class="intro-actions testing-actions">
+      <a class="button-link" href="/challenge">Open challenge (current progress)</a>
+      <a class="button-link" href="/">Workshop intro</a>
+    </div>
+  </article>
+</main>
+</body>
+</html>
